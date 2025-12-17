@@ -1,0 +1,33 @@
+<a href="/" class="site-logo">
+  <span class="hashbang">#!</span>
+  <span class="path">/usr/bin/</span>
+  <span class="exec">fullstack-notes</span>
+</a>
+
+<style>
+  .site-logo {
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .hashbang {
+    color: var(--sl-color-gray-4); /* Dimmed */
+    margin-right: 2px;
+  }
+
+  .path {
+    color: var(--sl-color-gray-3); /* Dimmed path */
+  }
+
+  .exec {
+    color: var(--sl-color-accent-high); /* The executable is bright green/accent */
+    font-weight: 800;
+  }
+  
+  /* Mobile: Hide the path to save space */
+  @media (max-width: 500px) {
+    .path { display: none; }
+  }
+</style>

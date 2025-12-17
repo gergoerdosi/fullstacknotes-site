@@ -1,0 +1,93 @@
+---
+import DefaultFooter from '@astrojs/starlight/components/Footer.astro';
+import { Icon } from '@astrojs/starlight/components';
+import type { Props } from '@astrojs/starlight/props';
+
+const year = new Date().getFullYear();
+const owner = "Gergő Erdősi"; 
+const email = "hello@fullstacknotes.dev";
+const repoUrl = "https://github.com/gergoerdosi/fullstacknotes.dev";
+---
+
+<DefaultFooter {...Astro.props} />
+
+<div class="meta-footer">
+  <div class="meta-content">
+    
+    <span class="copyright">&copy; {year} {owner}. All rights reserved.</span>
+    
+    <span class="separator" aria-hidden="true">&middot;</span>
+    
+    <div class="links">
+      
+      <a href={`mailto:${email}`} class="minimal-link" aria-label="Email">
+        <Icon name="email" size="1.1em" />
+        <span>Contact</span>
+      </a>
+
+      <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="minimal-link" aria-label="GitHub">
+        <Icon name="github" size="1.1em" />
+        <span>Contribute</span>
+      </a>
+      
+    </div>
+  </div>
+</div>
+
+<style>
+  .meta-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--sl-color-hairline);
+    
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+  }
+
+  .meta-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Links Styling */
+  .links {
+    display: flex;
+    gap: 1.5rem; /* Space between the two links */
+    align-items: center;
+  }
+
+  .minimal-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem; /* Space between icon and text */
+    
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .minimal-link:hover {
+    color: var(--sl-color-text-accent);
+  }
+
+  /* Separator */
+  .separator {
+    color: var(--sl-color-gray-5);
+    margin: 0 0.5rem;
+  }
+
+  /* Mobile Adjustment */
+  @media (max-width: 500px) {
+    .meta-content {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .separator {
+      display: none;
+    }
+  }
+</style>

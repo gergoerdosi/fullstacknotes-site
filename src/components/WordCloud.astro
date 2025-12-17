@@ -1,0 +1,198 @@
+---
+
+const keywords = [
+  // Tier 1 (Largest)
+  { text: "Node.js", size: 5 },
+  { text: "JavaScript", size: 5 },
+  { text: "Full Stack", size: 5 },
+  { text: "TypeScript", size: 5 },
+  
+  // Tier 2
+  { text: "React", size: 4 },
+  { text: "Backend", size: 4 },
+  { text: "System Design", size: 4 },
+  { text: "Database", size: 4 },
+  { text: "Vue.js", size: 4 },
+  { text: "Docker", size: 4 },
+  { text: "Kubernetes", size: 4 },
+  { text: "Microservices", size: 4 },
+
+  // Tier 3
+  { text: "Express", size: 3 },
+  { text: "Next.js", size: 3 },
+  { text: "PostgreSQL", size: 3 },
+  { text: "MongoDB", size: 3 },
+  { text: "GraphQL", size: 3 },
+  { text: "DevOps", size: 3 },
+  { text: "AWS", size: 3 },
+  { text: "Serverless", size: 3 },
+  { text: "Astro", size: 3 },
+  { text: "Linux", size: 3 },
+  { text: "Nginx", size: 3 },
+  { text: "Go", size: 3 },
+  { text: "Python", size: 3 },
+  { text: "Rust", size: 3 },
+
+  // Tier 4
+  { text: "NestJS", size: 2 },
+  { text: "Redis", size: 2 },
+  { text: "TDD", size: 2 },
+  { text: "CI/CD", size: 2 },
+  { text: "Git", size: 2 },
+  { text: "WebSockets", size: 2 },
+  { text: "Svelte", size: 2 },
+  { text: "Tailwind", size: 2 },
+  { text: "Prisma", size: 2 },
+  { text: "Vercel", size: 2 },
+  { text: "Netlify", size: 2 },
+  { text: "Heroku", size: 2 },
+  { text: "Jest", size: 2 },
+  { text: "Cypress", size: 2 },
+  { text: "Webpack", size: 2 },
+  { text: "Babel", size: 2 },
+  { text: "JWT", size: 2 },
+  { text: "OAuth", size: 2 },
+  { text: "Sass", size: 2 },
+
+  // Tier 5 (Smallest filler words - heavily expanded)
+  { text: "npm", size: 1 },
+  { text: "Bun", size: 1 },
+  { text: "Vite", size: 1 },
+  { text: "Deno", size: 1 },
+  { text: "REST", size: 1 },
+  { text: "Auth", size: 1 },
+  { text: "Edge", size: 1 },
+  { text: "pnpm", size: 1 },
+  { text: "Yarn", size: 1 },
+  { text: "ESLint", size: 1 },
+  { text: "Prettier", size: 1 },
+  { text: "Husky", size: 1 },
+  { text: "Axios", size: 1 },
+  { text: "Fetch", size: 1 },
+  { text: "JSON", size: 1 },
+  { text: "XML", size: 1 },
+  { text: "YAML", size: 1 },
+  { text: "Bash", size: 1 },
+  { text: "Zsh", size: 1 },
+  { text: "SSH", size: 1 },
+  { text: "HTTP/2", size: 1 },
+  { text: "SSL", size: 1 },
+  { text: "DNS", size: 1 },
+  { text: "CDN", size: 1 },
+  { text: "SEO", size: 1 },
+  { text: "a11y", size: 1 },
+  { text: "i18n", size: 1 },
+  { text: "WASM", size: 1 },
+  { text: "Solid", size: 1 },
+  { text: "Qwik", size: 1 },
+  { text: "TRPC", size: 1 },
+  { text: "Zod", size: 1 },
+  { text: "RxJS", size: 1 },
+  { text: "Lodash", size: 1 },
+  { text: "Moment", size: 1 },
+  { text: "Recoil", size: 1 },
+  { text: "Zustand", size: 1 },
+  { text: "Redux", size: 1 },
+  { text: "MobX", size: 1 },
+];
+
+function shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+const shuffledKeywords = shuffleArray([...keywords]);
+---
+
+<div class="word-cloud-container not-content">
+  <div class="cloud-wrap">
+    {shuffledKeywords.map((word) => (
+      <span class={`cloud-word size-${word.size}`}>{word.text}</span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .word-cloud-container {
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .cloud-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem 0.6rem; 
+    width: 100%;
+    max-width: 100%; 
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .cloud-word {
+    display: inline-block;
+    line-height: 1;
+    padding: 0;
+    cursor: default;
+    
+    color: var(--sl-color-text);
+    
+    white-space: nowrap; 
+    transition: opacity 0.3s ease; /* smooth transition if theme toggled */
+  }
+
+  /* --- Sizing & Opacity Control --- */
+  
+  /* Tier 1: Main Focus */
+  .size-5 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    opacity: 1;      /* Fully opaque for maximum contrast */
+  }
+
+  /* Tier 2 */
+  .size-4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    opacity: 0.85;   /* Slightly darker/lighter */
+  }
+
+  /* Tier 3 */
+  .size-3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  /* Tier 4 */
+  .size-2 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0.5;
+  }
+
+  /* Tier 5: Background Noise */
+  .size-1 {
+    font-size: 0.6rem;
+    font-weight: 400;
+    opacity: 0.25;      /* Faded but visible in both modes */
+  }
+
+  /* --- Scatter Effect --- */
+  .cloud-word:nth-child(2n) { transform: translateY(2px); }
+  .cloud-word:nth-child(3n) { transform: translateY(-2px); }
+  .cloud-word:nth-child(5n) { transform: translateY(3px); }
+  .cloud-word:nth-child(7n) { transform: translateY(-3px); }
+
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+    60% { opacity: 1; transform: scale(1.1); } /* slight bounce */
+    100% { opacity: 1; transform: scale(1); }
+  }
+</style>
