@@ -8,17 +8,17 @@ hero:
   tagline: A collection of practical notes and tips for modern web development.
 ---
 
-import WordCloud from '../../components/WordCloud.astro';
+import TechChips from '../../components/TechChips.astro';
 
-<WordCloud />
+<TechChips />
 
 <style is:global>{`
-  /* 1. Page Layout & Content Width */
+  /* Page Layout & Content Width */
   :root {
     --sl-content-width: 60rem;
   }
 
-  /* 2. Force Hero Centering */
+  /* Force Hero Centering */
   .hero {
     grid-template-columns: 1fr !important;
     justify-items: center !important;
@@ -33,7 +33,7 @@ import WordCloud from '../../components/WordCloud.astro';
     max-width: 800px;
   }
 
-  /* 3. Hero Title & Tagline */
+  /* Hero Title & Tagline */
   .hero h1 {
     width: 100%; 
     position: relative;
@@ -48,7 +48,7 @@ import WordCloud from '../../components/WordCloud.astro';
     color: var(--sl-color-gray-2);
   }
 
-  /* 4. Glow Effect (Dark Mode Only) */
+  /* Glow Effect (Dark Mode Only) */
   :root[data-theme='dark'] .hero h1::before {
     content: "";
     position: absolute;
@@ -66,14 +66,18 @@ import WordCloud from '../../components/WordCloud.astro';
     
     background: radial-gradient(
       closest-side, 
-      var(--sl-color-accent-low), 
+      var(--sl-color-accent), 
       transparent 100%
     );
-    filter: blur(70px);
-    opacity: 0.4;
+    
+    filter: blur(80px); /* Increased blur slightly for smoothness */
+    
+    /* CHANGE 2: Lower opacity slightly since the color is now much brighter */
+    opacity: 0.2; 
     pointer-events: none;
   }
 
+  /* Hide Default Footer */
   footer {
     display: none;
   }

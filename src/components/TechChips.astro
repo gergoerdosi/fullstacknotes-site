@@ -1,0 +1,146 @@
+---
+const keywords = [
+  // Tier 1 (Largest)
+  { text: "Node.js", size: 5 }, { text: "JavaScript", size: 5 }, { text: "Full Stack", size: 5 }, { text: "TypeScript", size: 5 },
+  
+  // Tier 2
+  { text: "React", size: 4 }, { text: "Backend", size: 4 }, { text: "System Design", size: 4 }, { text: "Database", size: 4 },
+  { text: "Vue.js", size: 4 }, { text: "Docker", size: 4 }, { text: "Kubernetes", size: 4 }, { text: "Microservices", size: 4 },
+
+  // Tier 3
+  { text: "Express", size: 3 }, { text: "Next.js", size: 3 }, { text: "PostgreSQL", size: 3 }, { text: "MongoDB", size: 3 },
+  { text: "GraphQL", size: 3 }, { text: "DevOps", size: 3 }, { text: "AWS", size: 3 }, { text: "Serverless", size: 3 },
+  { text: "Astro", size: 3 }, { text: "Linux", size: 3 }, { text: "Nginx", size: 3 }, { text: "Go", size: 3 },
+  { text: "Python", size: 3 }, { text: "Rust", size: 3 },
+
+  // Tier 4
+  { text: "NestJS", size: 2 }, { text: "Redis", size: 2 }, { text: "TDD", size: 2 }, { text: "CI/CD", size: 2 },
+  { text: "Git", size: 2 }, { text: "WebSockets", size: 2 }, { text: "Svelte", size: 2 }, { text: "Tailwind", size: 2 },
+  { text: "Prisma", size: 2 }, { text: "Vercel", size: 2 }, { text: "Netlify", size: 2 }, { text: "Heroku", size: 2 },
+  { text: "Jest", size: 2 }, { text: "Cypress", size: 2 }, { text: "Webpack", size: 2 }, { text: "Babel", size: 2 },
+  { text: "JWT", size: 2 }, { text: "OAuth", size: 2 }, { text: "Sass", size: 2 },
+
+  // Tier 5 (Smallest filler words)
+  { text: "npm", size: 1 }, { text: "Bun", size: 1 }, { text: "Vite", size: 1 }, { text: "Deno", size: 1 },
+  { text: "REST", size: 1 }, { text: "Auth", size: 1 }, { text: "Edge", size: 1 }, { text: "pnpm", size: 1 },
+  { text: "Yarn", size: 1 }, { text: "ESLint", size: 1 }, { text: "Prettier", size: 1 }, { text: "Husky", size: 1 },
+  { text: "Axios", size: 1 }, { text: "Fetch", size: 1 }, { text: "JSON", size: 1 }, { text: "XML", size: 1 },
+  { text: "YAML", size: 1 }, { text: "Bash", size: 1 }, { text: "Zsh", size: 1 }, { text: "SSH", size: 1 },
+  { text: "HTTP/2", size: 1 }, { text: "SSL", size: 1 }, { text: "DNS", size: 1 }, { text: "CDN", size: 1 },
+  { text: "SEO", size: 1 }, { text: "a11y", size: 1 }, { text: "i18n", size: 1 }, { text: "WASM", size: 1 },
+  { text: "Solid", size: 1 }, { text: "Qwik", size: 1 }, { text: "TRPC", size: 1 }, { text: "Zod", size: 1 },
+  { text: "RxJS", size: 1 }, { text: "Lodash", size: 1 }, { text: "Moment", size: 1 }, { text: "Recoil", size: 1 },
+  { text: "Zustand", size: 1 }, { text: "Redux", size: 1 }, { text: "MobX", size: 1 }
+];
+
+function getCuratedList(allKeywords) {
+  // 1. Always keep Tier 4 and 5 (Your Core Stack)
+  const core = allKeywords.filter(k => k.size >= 4);
+
+  // 2. Get the supporting tech (Tier 1, 2, 3)
+  const supporting = allKeywords.filter(k => k.size < 4);
+  
+  // 3. Shuffle supporting tech and keep only ~60% of it
+  const shuffledSupporting = supporting.sort(() => Math.random() - 0.5);
+  const selectedSupporting = shuffledSupporting.slice(0, Math.floor(supporting.length * 0.6));
+
+  // 4. Combine and shuffle everything for display
+  return [...core, ...selectedSupporting].sort(() => Math.random() - 0.5);
+}
+
+const displayKeywords = getCuratedList([...keywords]);
+---
+
+<div class="chip-container not-content">
+  {displayKeywords.map((item) => (
+    <span class={`chip tier-${item.size}`}>
+      {item.text}
+    </span>
+  ))}
+</div>
+
+<style>
+  .chip-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 2rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    /* CHANGED: Use a tighter radius to match theme buttons/inputs */
+    border-radius: 0.5rem; 
+    transition: all 0.2s ease;
+    cursor: default;
+    
+    /* Default Borders/Fonts */
+    border: 1px solid transparent;
+    font-size: 0.85rem;
+    font-family: var(--sl-font-system);
+    line-height: 1;
+  }
+
+  .chip:hover {
+    transform: translateY(-2px);
+    z-index: 2;
+  }
+
+  /* --- TIER STYLES --- */
+
+  /* Tier 5: The "Primary" Badges (Solid Accent Background) */
+  .tier-5 {
+    background-color: var(--sl-color-accent-low);
+    color: var(--sl-color-text-accent);
+    border-color: var(--sl-color-accent);
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  /* Tier 4: Strong Outlines */
+  .tier-4 {
+    background-color: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    border-color: var(--sl-color-gray-4);
+    padding: 0.4rem 0.9rem;
+    font-weight: 600;
+  }
+
+  /* Tier 3: Subtle Outlines */
+  .tier-3 {
+    background-color: transparent;
+    color: var(--sl-color-gray-2);
+    border-color: var(--sl-color-gray-5);
+    padding: 0.35rem 0.8rem;
+    font-weight: 500;
+  }
+  
+  /* Tier 2: Minimalist (No border, just slight background) */
+  .tier-2 {
+    background-color: var(--sl-color-gray-6);
+    color: var(--sl-color-gray-3);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  /* Tier 1: "Ghost" Badges (Text only, fading into bg) */
+  .tier-1 {
+    background-color: transparent;
+    color: var(--sl-color-gray-4);
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  /* Hover Effects */
+  .tier-4:hover, .tier-3:hover, .tier-2:hover {
+    border-color: var(--sl-color-accent);
+    color: var(--sl-color-white);
+  }
+</style>
