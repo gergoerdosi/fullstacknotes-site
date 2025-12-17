@@ -1,86 +1,22 @@
-/* src/styles/custom.css */
-
-/* =========================================
-   1. Global Layout & Typography Overrides
-   ========================================= */
+/* 🌑 Dark Mode (Default) */
 :root {
-  --sl-content-width: 60rem; /* Increase global max-width */
-}
-
-/* Limit line length for readability without constraining code blocks */
-.sl-markdown-content p, 
-.sl-markdown-content ul, 
-.sl-markdown-content ol {
-  max-width: 45rem; 
-}
-
-/* Allow code blocks and grids to use full available width */
-.sl-markdown-content .expressive-code,
-.sl-markdown-content .card-grid {
-  max-width: 100%; 
-}
-
-/* =========================================
-   2. Hero Section Centering
-   ========================================= */
-
-/* Force the main Hero Grid to a single centered column */
-.hero {
-  grid-template-columns: 1fr !important; /* Override default side-by-side layout */
-  justify-items: center !important;      /* Center items horizontally */
-  text-align: center !important;         /* Center text inside items */
-  padding-bottom: 4rem;
-}
-
-/* Target the internal wrapper (title + tagline + buttons) */
-.hero .stack {
-  align-items: center !important; /* Align flex children (buttons) to center */
-  text-align: center !important;  /* Ensure text inheritance */
-  margin-inline: auto !important; /* Center the wrapper itself */
-  max-width: 800px;               /* Prevent lines from becoming too wide */
-}
-
-/* Hero Title Styling */
-.hero h1 {
-  width: 100%; 
-  position: relative;    /* Creates anchor point for the Glow effect */
-  display: inline-block; /* tighter box model for better glow centering */
-  z-index: 1;            /* Ensure text sits on top of the glow */
-}
-
-/* Hero Tagline Styling */
-.hero .tagline {
-  margin-inline: auto;
-  font-size: 1.6rem;
-  line-height: 1.6;
-  color: var(--sl-color-gray-2);
-}
-
-/* =========================================
-   3. Hero Glow Effect (Dark Mode Only)
-   ========================================= */
-:root[data-theme='dark'] .hero h1::before {
-  content: "";
-  position: absolute;
-  z-index: -1; /* Place behind the text */
+  /* Main Accent: #3b82f6 */
+  --sl-color-accent-low: #1e3a8a;  /* Deep blue for subtle backgrounds */
+  --sl-color-accent: #3b82f6;      /* The main border/highlight color */
+  --sl-color-accent-high: #60a5fa; /* Lighter blue for high-contrast text/icons */
+  --sl-color-text-accent: #60a5fa; /* Links text color */
   
-  /* Center positioning relative to the H1 */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* Optional: Adjust the "glow" of the navbar logo to match */
+  --sl-hue-accent: 217; /* Matches the blue hue */
+}
+
+/* ☀️ Light Mode */
+[data-theme='light'] {
+  /* Main Accent: #2563eb */
+  --sl-color-accent-low: #dbeafe;  /* Very pale blue for backgrounds */
+  --sl-color-accent: #2563eb;      /* Main border/highlight */
+  --sl-color-accent-high: #1d4ed8; /* Darker blue for text/icons */
+  --sl-color-text-accent: #2563eb; /* Links text color */
   
-  /* Visual Settings */
-  width: 600px;
-  height: 600px;
-  border-radius: 50%; /* Perfect circle */
-  
-  /* Gradient & Opacity */
-  background: radial-gradient(
-    closest-side, 
-    var(--sl-color-accent-low), 
-    transparent 100%
-  );
-  filter: blur(70px);
-  opacity: 0.4;
-  pointer-events: none; /* Allows clicks to pass through to buttons */
+  --sl-hue-accent: 217;
 }

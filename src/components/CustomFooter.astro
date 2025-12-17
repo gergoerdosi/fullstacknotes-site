@@ -7,6 +7,7 @@ const year = new Date().getFullYear();
 const owner = "Gergő Erdősi"; 
 const email = "hello@fullstacknotes.dev";
 const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
+const licenseUrl = "https://creativecommons.org/licenses/by-nc/4.0/";
 ---
 
 <DefaultFooter {...Astro.props} />
@@ -14,12 +15,24 @@ const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
 <div class="meta-footer">
   <div class="meta-content">
     
-    <span class="copyright">&copy; {year} {owner}. All rights reserved.</span>
-    
-    <span class="separator" aria-hidden="true">&middot;</span>
-    
-    <div class="links">
+    {/* Copyright & License Section */}
+    <div class="copyright-group">
+      <span>&copy; {year} {owner}</span>
+      <span class="desktop-separator" aria-hidden="true">|</span>
       
+      <a href={licenseUrl} target="_blank" rel="noopener noreferrer" class="license-link" aria-label="Creative Commons BY-NC 4.0 License">
+        {/* SVG Icons for CC BY-NC */}
+        <span class="cc-icons">
+          <svg viewBox="0 0 24 24" class="cc-icon" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l5-5-5-5L9 5l3.5 3.5L9 12l-2.5-2.5z" opacity="0"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4.2c-.66 0-1.2-.54-1.2-1.2 0-.66.54-1.2 1.2-1.2.66 0 1.2.54 1.2 1.2 0 .66-.54 1.2-1.2 1.2zm0 2.8c-2.33 0-7 1.17-7 3.5V18h14v-1.5c0-2.33-4.67-3.5-7-3.5zm-5.2 3.5c.34-.89 2.76-1.7 5.2-1.7 2.44 0 4.86.81 5.2 1.7H6.8z"/></svg>
+        </span>
+        <span>CC BY-NC 4.0</span>
+      </a>
+    </div>
+
+    <span class="main-separator" aria-hidden="true">&middot;</span>
+    
+    {/* Links Section */}
+    <div class="links">
       <a href={`mailto:${email}`} class="minimal-link" aria-label="Email">
         <Icon name="email" size="1.1em" />
         <span>Contact</span>
@@ -29,7 +42,6 @@ const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
         <Icon name="github" size="1.1em" />
         <span>Contribute</span>
       </a>
-      
     </div>
   </div>
 </div>
@@ -39,7 +51,6 @@ const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
     margin-top: 4rem;
     padding-top: 2rem;
     border-top: 1px solid var(--sl-color-hairline);
-    
     font-size: var(--sl-text-xs);
     color: var(--sl-color-gray-3);
   }
@@ -50,20 +61,46 @@ const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+    text-align: center;
+  }
+
+  /* Copyright & License Grouping */
+  .copyright-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .license-link {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .license-link:hover {
+    color: var(--sl-color-text-accent);
+  }
+
+  .cc-icon {
+    width: 1.1em;
+    height: 1.1em;
+    transform: translateY(1px); /* Optical alignment */
   }
 
   /* Links Styling */
   .links {
     display: flex;
-    gap: 1.5rem; /* Space between the two links */
+    gap: 1.5rem;
     align-items: center;
   }
 
   .minimal-link {
     display: flex;
     align-items: center;
-    gap: 0.4rem; /* Space between icon and text */
-    
+    gap: 0.4rem;
     color: var(--sl-color-gray-2);
     text-decoration: none;
     font-weight: 500;
@@ -74,20 +111,33 @@ const repoUrl = "https://github.com/gergoerdosi/fullstacknotes-site";
     color: var(--sl-color-text-accent);
   }
 
-  /* Separator */
-  .separator {
+  /* Separators */
+  .desktop-separator {
+    color: var(--sl-color-gray-5);
+    opacity: 0.5;
+  }
+
+  .main-separator {
     color: var(--sl-color-gray-5);
     margin: 0 0.5rem;
   }
 
   /* Mobile Adjustment */
-  @media (max-width: 500px) {
+  @media (max-width: 600px) {
     .meta-content {
       flex-direction: column;
       gap: 1rem;
     }
-    .separator {
+    
+    /* Hide the dot separator on mobile */
+    .main-separator {
       display: none;
+    }
+    
+    /* Stack the copyright group on very small screens */
+    .copyright-group {
+      flex-wrap: wrap;
+      justify-content: center;
     }
   }
 </style>
