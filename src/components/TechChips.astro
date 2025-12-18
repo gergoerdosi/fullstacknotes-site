@@ -34,17 +34,17 @@ const keywords = [
 ];
 
 function getCuratedList(allKeywords) {
-  // 1. Always keep Tier 4 and 5 (Your Core Stack)
+  // Always keep Tier 4 and 5
   const core = allKeywords.filter(k => k.size >= 4);
 
-  // 2. Get the supporting tech (Tier 1, 2, 3)
+  // Get the supporting tech (Tier 1, 2, 3)
   const supporting = allKeywords.filter(k => k.size < 4);
   
-  // 3. Shuffle supporting tech and keep only ~60% of it
+  // Shuffle supporting tech and keep only ~60% of it
   const shuffledSupporting = supporting.sort(() => Math.random() - 0.5);
   const selectedSupporting = shuffledSupporting.slice(0, Math.floor(supporting.length * 0.6));
 
-  // 4. Combine and shuffle everything for display
+  // Combine and shuffle everything for display
   return [...core, ...selectedSupporting].sort(() => Math.random() - 0.5);
 }
 
@@ -73,7 +73,6 @@ const displayKeywords = getCuratedList([...keywords]);
   .chip {
     display: inline-flex;
     align-items: center;
-    /* CHANGED: Use a tighter radius to match theme buttons/inputs */
     border-radius: 0.5rem; 
     transition: all 0.2s ease;
     cursor: default;
@@ -92,7 +91,7 @@ const displayKeywords = getCuratedList([...keywords]);
 
   /* --- TIER STYLES --- */
 
-  /* Tier 5: The "Primary" Badges (Solid Accent Background) */
+  /* Tier 5: Solid Accent */
   .tier-5 {
     background-color: var(--sl-color-accent-low);
     color: var(--sl-color-text-accent);
@@ -121,7 +120,7 @@ const displayKeywords = getCuratedList([...keywords]);
     font-weight: 500;
   }
   
-  /* Tier 2: Minimalist (No border, just slight background) */
+  /* Tier 2: Minimalist */
   .tier-2 {
     background-color: var(--sl-color-gray-6);
     color: var(--sl-color-gray-3);
@@ -129,7 +128,7 @@ const displayKeywords = getCuratedList([...keywords]);
     font-size: 0.8rem;
   }
 
-  /* Tier 1: "Ghost" Badges (Text only, fading into bg) */
+  /* Tier 1: Ghost */
   .tier-1 {
     background-color: transparent;
     color: var(--sl-color-gray-4);
@@ -142,5 +141,27 @@ const displayKeywords = getCuratedList([...keywords]);
   .tier-4:hover, .tier-3:hover, .tier-2:hover {
     border-color: var(--sl-color-accent);
     color: var(--sl-color-white);
+  }
+
+  /* --- MOBILE OPTIMIZATION --- */
+  @media (max-width: 50rem) {
+    
+    .chip-container {
+      gap: 5px; /* Tighter gap */
+      padding: 1rem 0; 
+    }
+
+    .chip {
+      /* Significantly smaller font and padding for ALL chips */
+      font-size: 0.7rem !important; 
+      padding: 0.2rem 0.5rem !important;
+      border-radius: 0.3rem !important;
+    }
+
+    /* Adjust Tier 5 (Core) specifically so it stands out but fits */
+    .chip.tier-5 {
+      font-size: 0.8rem !important;
+      padding: 0.3rem 0.6rem !important;
+    }
   }
 </style>

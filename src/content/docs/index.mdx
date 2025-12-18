@@ -24,6 +24,22 @@ import TechChips from '../../components/TechChips.astro';
     justify-items: center !important;
     text-align: center !important;
     padding-bottom: 4rem;
+    max-width: 100%;
+    overflow-x: clip; 
+  }
+
+  /* --- MOBILE SPECIFIC TWEAKS --- */
+  @media (max-width: 50rem) {
+    /* Add top spacing on mobile */
+    .hero {
+      padding-top: 4rem; 
+    }
+    
+    /* Reduce tagline size on mobile */
+    .hero .tagline {
+      font-size: 1.1rem !important; /* Reduced from 1.6rem */
+      line-height: 1.4 !important;
+    }
   }
 
   .hero .stack {
@@ -31,6 +47,7 @@ import TechChips from '../../components/TechChips.astro';
     text-align: center !important;
     margin-inline: auto !important;
     max-width: 800px;
+    width: 100%; 
   }
 
   /* Hero Title & Tagline */
@@ -58,10 +75,10 @@ import TechChips from '../../components/TechChips.astro';
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;       /* Use 100% of the parent... */
+    max-width: 600px;  /* ...up to a maximum of 600px */
+    aspect-ratio: 1/1; /* Keeps it a perfect circle/square without fixed height */
     
-    /* Visuals */
-    width: 600px;
-    height: 600px;
     border-radius: 50%;
     
     background: radial-gradient(
@@ -70,9 +87,7 @@ import TechChips from '../../components/TechChips.astro';
       transparent 100%
     );
     
-    filter: blur(80px); /* Increased blur slightly for smoothness */
-    
-    /* CHANGE 2: Lower opacity slightly since the color is now much brighter */
+    filter: blur(80px);
     opacity: 0.2; 
     pointer-events: none;
   }
