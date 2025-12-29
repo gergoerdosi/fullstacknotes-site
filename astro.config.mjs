@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
+import sitemap from '@astrojs/sitemap';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://fullstacknotes.dev',
@@ -75,5 +77,6 @@ export default defineConfig({
         Footer: './src/components/CustomFooter.astro',
       },
     }),
+    sitemap()
   ],
 });
