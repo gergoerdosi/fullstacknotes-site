@@ -1,0 +1,336 @@
+---
+title: "Classes, Generics and Advanced Types"
+description: "Level up your TypeScript skills. Learn how to use Access Modifiers in Classes, write reusable code with Generics, and master Utility Types like Partial and Pick."
+tags: ["typescript", "generics", "classes", "advanced"]
+sidebar:
+  order: 2
+---
+
+## 1. Classes in TypeScript
+
+JavaScript Classes (ES6) are powerful, but TypeScript adds **Modifiers** to control access and safety.
+
+### Access Modifiers
+
+TypeScript provides three keywords to control who can see/use a property.
+
+1. **`public` (Default):** Accessible everywhere.
+2. **`private`:** Accessible *only* within this class.
+3. **`protected`:** Accessible within this class and *subclasses* (children).
+
+```typescript
+class Employee {
+    public name: string;        // Everyone can see this
+    private salary: number;     // Only Employee class can see this
+    protected department: string; // Employee & Managers can see this
+
+    constructor(name: string, salary: number, department: string) {
+        this.name = name;
+        this.salary = salary;
+        this.department = department;
+    }
+
+    getSalary() {
+        return this.salary; // OK: Inside class
+    }
+}
+
+const emp = new Employee("Alice", 50000, "HR");
+console.log(emp.name); // OK
+// console.log(emp.salary); // Error: Property 'salary' is private.
+
+```
+
+### Parameter Properties (Shorthand)
+
+TypeScript offers a shortcut to declare and assign properties in the constructor automatically.
+
+```typescript
+// The verbose way:
+// class User {
+//   name: string;
+//   constructor(name: string) { this.name = name; }
+// }
+
+// The shorthand way:
+class User {
+    constructor(public name: string, private age: number) {
+        // 'name' and 'age' are automatically created and assigned!
+    }
+}
+
+```
+
+### Abstract Classes
+
+An abstract class cannot be instantiated directly. It serves as a blueprint for other classes.
+
+```typescript
+abstract class Shape {
+    // Abstract method: Must be implemented by child classes
+    abstract getArea(): number;
+
+    // Regular method: Can be used by children as is
+    printArea() {
+        console.log("Area:", this.getArea());
+    }
+}
+
+class Circle extends Shape {
+    constructor(private radius: number) { super(); }
+
+    getArea(): number {
+        return Math.PI * this.radius ** 2;
+    }
+}
+
+// const s = new Shape(); // Error: Cannot create an instance of an abstract class.
+const c = new Circle(5); // OK
+
+```
+
+---
+
+## 2. Generics: The Power of Reusability
+
+Generics are arguably the most important advanced feature in TypeScript. They allow you to write code that works with **any** type, while still maintaining type safety.
+
+Think of Generics as **"Type Variables"**.
+
+### The Problem
+
+Without generics, we either have to duplicate code or use `any` (which loses safety).
+
+```typescript
+// Bad: Returns 'any', so we lose type info
+function identity(arg: any): any {
+    return arg;
+}
+
+```
+
+### The Solution: Generic Functions
+
+We use `<T>` (short for Type) as a placeholder.
+
+```typescript
+function identity<T>(arg: T): T {
+    return arg;
+}
+
+// Usage:
+const num = identity<number>(42); // T becomes 'number'
+const str = identity("Hello");    // TS infers T is 'string'
+
+// num.toUpperCase(); // Error! TS knows 'num' is a number.
+
+```
+
+### Generic Interfaces
+
+Commonly used for API responses where the `data` shape changes but the wrapper (status, message) stays the same.
+
+```typescript
+interface ApiResponse<T> {
+    status: number;
+    message: string;
+    data: T;
+}
+
+interface User { name: string; }
+interface Product { title: string; price: number; }
+
+// Reusing the ApiResponse interface for different data types
+const userResponse: ApiResponse<User> = {
+    status: 200,
+    message: "Success",
+    data: { name: "Alice" }
+};
+
+const productResponse: ApiResponse<Product> = {
+    status: 200,
+    message: "Success",
+    data: { title: "Phone", price: 999 }
+};
+
+```
+
+### Generic Constraints
+
+Sometimes you want a generic, but it must have specific properties (e.g., it must have a `.length` property).
+
+```typescript
+interface Lengthy {
+    length: number;
+}
+
+function logLength<T extends Lengthy>(arg: T): void {
+    console.log(arg.length);
+}
+
+logLength("Hello"); // OK (String has .length)
+logLength([1, 2, 3]); // OK (Array has .length)
+// logLength(100); // Error: Number does not have .length
+
+```
+
+---
+
+## 3. Utility Types
+
+TypeScript provides built-in tools to transform types. You will use these daily.
+
+### `Partial<T>`
+
+Constructs a type with all properties of T set to **optional**. Great for "update" functions.
+
+```typescript
+interface Todo {
+    title: string;
+    description: string;
+}
+
+function updateTodo(todo: Todo, fieldsToUpdate: Partial<Todo>) {
+    return { ...todo, ...fieldsToUpdate };
+}
+
+const todo1 = { title: "Clean room", description: "Vacuum" };
+
+// We only pass 'description', and TS is happy because Partial made 'title' optional
+updateTodo(todo1, { description: "Dust shelves" });
+
+```
+
+### `Required<T>`
+
+The opposite of Partial. Makes all properties required.
+
+### `Readonly<T>`
+
+Makes all properties read-only (cannot be reassigned).
+
+```typescript
+const config: Readonly<Todo> = { title: "Delete", description: "Warning" };
+// config.title = "New Title"; // Error
+
+```
+
+### `Pick<T, K>` and `Omit<T, K>`
+
+Selects or Removes specific keys from a type.
+
+```typescript
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    passwordHash: string; // Sensitive!
+}
+
+// Create a type for the Frontend that doesn't include the password
+type UserPreview = Omit<User, "passwordHash">;
+
+// Or explicitly pick what we want
+type UserContact = Pick<User, "email" | "name">;
+
+```
+
+---
+
+## 4. Type Assertions ("Casting")
+
+Sometimes you know more about a value's type than TypeScript does. You can tell the compiler "Trust me, I know what this is."
+
+### The `as` syntax
+
+```typescript
+// DOM elements are generic 'HTMLElement' by default
+const input = document.getElementById("user-input");
+
+// input.value; // Error: Property 'value' does not exist on 'HTMLElement'.
+
+// We cast it to HTMLInputElement because WE know it's an input box
+const myInput = document.getElementById("user-input") as HTMLInputElement;
+
+console.log(myInput.value); // OK!
+
+```
+
+*Warning: Use assertions sparingly. If you lie to the compiler, runtime errors will occur.*
+
+---
+
+## 5. Keyof Operator
+
+The `keyof` operator takes an object type and produces a string or numeric literal union of its keys.
+
+```typescript
+interface Person {
+    name: string;
+    age: number;
+}
+
+type PersonKeys = keyof Person; // "name" | "age"
+
+function getProperty(obj: Person, key: PersonKeys) {
+    return obj[key];
+}
+
+getProperty({ name: "Sam", age: 30 }, "name"); // OK
+// getProperty({ ... }, "email"); // Error: "email" is not a key of Person
+
+```
+
+---
+
+## Review Challenge
+
+Create a Generic Class called `StorageBox`.
+
+1. It should hold a value of type `T`.
+2. It needs a private property `_contents`.
+3. Add a `set(val: T)` method.
+4. Add a `get(): T` method.
+5. Instantiate it once for `string` and once for `number`.
+
+<details>
+<summary>Click to see the solution</summary>
+
+This solution demonstrates how to combine **Generics** (`<T>`) with **Classes** and **Access Modifiers** (`private`) to create a reusable data structure.
+
+```typescript
+// 1. Define the Generic Class
+class StorageBox<T> {
+    // Private property to hold the data
+    private _contents: T;
+
+    // Constructor to initialize (optional, but good practice)
+    constructor(initialValue: T) {
+        this._contents = initialValue;
+    }
+
+    // 2. Setter method
+    set(val: T): void {
+        this._contents = val;
+    }
+
+    // 3. Getter method
+    get(): T {
+        return this._contents;
+    }
+}
+
+// 4. Instantiate for Strings
+const stringBox = new StorageBox<string>("Initial String");
+stringBox.set("Updated String");
+console.log(stringBox.get()); // Output: "Updated String"
+// stringBox.set(123); // Error: Argument of type 'number' is not assignable to 'string'.
+
+// 5. Instantiate for Numbers
+const numberBox = new StorageBox<number>(0);
+numberBox.set(42);
+console.log(numberBox.get()); // Output: 42
+
+```
+
+</details>

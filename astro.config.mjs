@@ -4,12 +4,12 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://fullstacknotes.dev',
-	integrations: [
-		starlight({
-			title: 'Fullstack Notes',
-			favicon: '/favicon-dark-32.png',
-			head: [
+  site: 'https://fullstacknotes.dev',
+  integrations: [
+    starlight({
+      title: 'Fullstack Notes',
+      favicon: '/favicon-dark-32.png',
+      head: [
         {
           tag: 'link',
           attrs: {
@@ -27,26 +27,53 @@ export default defineConfig({
           },
         },
       ],
-			customCss: [
+      customCss: [
         './src/styles/custom.css',
       ],
-			sidebar: [
-				{
-					label: 'Guides',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
-				},
-				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
-				},
-			],
-			components: {
-				SiteTitle: './src/components/SiteLogo.astro',
+      sidebar: [
+        {
+          label: 'JavaScript',
+          collapsed: false,
+          items: [
+            {
+              label: 'Notes',
+              collapsed: false,
+              autogenerate: { directory: 'javascript/notes' },
+            },
+            {
+              label: 'Gotchas',
+              collapsed: false,
+              autogenerate: { directory: 'javascript/gotchas' },
+            },
+            {
+              label: 'Coding Interviews',
+              collapsed: false,
+              autogenerate: { directory: 'javascript/coding-interviews' },
+            },
+          ],
+        },
+        {
+          label: 'TypeScript',
+          collapsed: false,
+          items: [
+            {
+              label: 'Notes',
+              collapsed: false,
+              autogenerate: { directory: 'typescript/notes' },
+            },
+            {
+              label: 'Coding Interviews',
+              collapsed: false,
+              autogenerate: { directory: 'typescript/coding-interviews' },
+            },
+          ],
+        },
+      ],
+      components: {
+        SiteTitle: './src/components/SiteLogo.astro',
+        PageTitle: './src/components/PageTitleWithBreadcrumbs.astro',
         Footer: './src/components/CustomFooter.astro',
       },
-		}),
-	],
+    }),
+  ],
 });

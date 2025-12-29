@@ -1,0 +1,129 @@
+---
+import DefaultPageTitle from '@astrojs/starlight/components/PageTitle.astro';
+
+// CONFIG: Manual titles for folders
+const customLabels = {
+  'javascript': 'JavaScript',
+  'typescript': 'TypeScript',
+  'notes': 'Notes',
+  'gotchas': 'Gotchas',
+  'coding-interviews': 'Coding Interviews',
+};
+
+const currentPath = Astro.url.pathname.replace(/\/$/, '');
+const segments = currentPath.split('/').filter(Boolean);
+const isHomepage = segments.length === 0;
+
+function getLabelForPath(segment, isLast) {
+  // A. Current Page (From Starlight Data)
+  if (isLast) {
+    const entry = Astro.locals.starlightRoute.entry;
+    return entry.data.sidebar?.label || entry.data.title;
+  }
+  // B. Custom Map
+  if (customLabels[segment]) return customLabels[segment];
+  // C. Fallback
+  return segment;
+}
+---
+
+{
+  !isHomepage && (
+    <nav aria-label="Breadcrumb" class="modern-breadcrumbs">
+      <ol>
+        {/* Home is usually kept as a link for utility */}
+        <li>
+          <a href="/" class="crumb-link home-link" aria-label="Home">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon home-icon">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </a>
+        </li>
+
+        {segments.map((segment, index) => {
+          const isLast = index === segments.length - 1;
+          const label = getLabelForPath(segment, isLast);
+
+          return (
+            <li>
+              {/* Separator */}
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon separator-icon">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+
+              {/* TEXT ONLY - NO LINKS */}
+              <span class={`crumb-text ${isLast ? 'current' : 'parent'}`}>
+                {label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  )
+}
+
+<DefaultPageTitle {...Astro.props}>
+  <slot />
+</DefaultPageTitle>
+
+<style>
+  /* --- Container --- */
+  .modern-breadcrumbs {
+    margin-bottom: 0.75rem;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: var(--sl-text-xs);
+    letter-spacing: -0.01em;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .modern-breadcrumbs::-webkit-scrollbar { display: none; }
+
+  .modern-breadcrumbs ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .modern-breadcrumbs li { display: flex; align-items: center; flex-shrink: 0; }
+
+  /* --- Icons --- */
+  .icon { width: 1em; height: 1em; display: block; }
+  .home-icon { width: 1.15em; height: 1.15em; margin-bottom: 2px; }
+  .separator-icon { color: var(--sl-color-gray-3); margin: 0 0.1rem; width: 0.85em; height: 0.85em; }
+
+  /* --- Home Link --- */
+  .crumb-link {
+    display: flex; align-items: center;
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .crumb-link:hover {
+    color: var(--sl-color-accent-high);
+  }
+
+  /* --- Text Items --- */
+  .crumb-text {
+    font-weight: 500;
+    cursor: default; /* Shows mouse arrow, not hand pointer */
+  }
+
+  /* Style for Parent folders (Gray) */
+  .crumb-text.parent {
+    color: var(--sl-color-gray-3);
+  }
+
+  /* Style for Current Page (White) */
+  .crumb-text.current {
+    color: var(--sl-color-white);
+    font-weight: 600;
+  }
+</style>
