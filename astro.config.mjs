@@ -10,7 +10,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Fullstack Notes',
-      description: 'A collection of practical notes and tips for modern web development.',
+      description: 'A deep dive into modern web development. Core notes on TypeScript and Node.js, extended with guides on internals, networking, and system architecture.',
       favicon: '/favicon-dark-32.png',
       head: [
         {
@@ -27,6 +27,20 @@ export default defineConfig({
             rel: 'icon',
             href: '/favicon-dark-32.png',
             media: '(prefers-color-scheme: dark)',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'og:site_name',
+            content: 'Fullstack Notes',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'og:title',
+            content: 'Fullstack Notes: The JavaScript Ecosystem and Beyond',
           },
         },
         {
