@@ -10,6 +10,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Fullstack Notes',
+      description: 'A collection of practical notes and tips for modern web development.',
       favicon: '/favicon-dark-32.png',
       head: [
         {
@@ -26,6 +27,20 @@ export default defineConfig({
             rel: 'icon',
             href: '/favicon-dark-32.png',
             media: '(prefers-color-scheme: dark)',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'og:image',
+            content: 'https://fullstacknotes.dev/og-default.png',
+          },
+        },
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'twitter:card',
+            content: 'summary_large_image',
           },
         },
       ],
