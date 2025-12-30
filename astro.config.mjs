@@ -70,6 +70,27 @@ export default defineConfig({
             },
           ],
         },
+        {
+          label: 'Node.js',
+          collapsed: false,
+          items: [
+            {
+              label: 'Notes',
+              collapsed: false,
+              autogenerate: { directory: 'nodejs/notes' },
+            },
+            {
+              label: 'Coding Interviews',
+              collapsed: false,
+              autogenerate: { directory: 'nodejs/coding-interviews' },
+            },
+          ],
+        },
+        {
+          label: 'Beyond JavaScript',
+          collapsed: false,
+          autogenerate: { directory: 'beyond-javascript' },
+        },
       ],
       components: {
         SiteTitle: './src/components/SiteLogo.astro',
