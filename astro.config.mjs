@@ -68,17 +68,17 @@ export default defineConfig({
           items: [
             {
               label: 'Notes',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'javascript/notes' },
             },
             {
               label: 'Gotchas',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'javascript/gotchas' },
             },
             {
               label: 'Coding Interviews',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'javascript/coding-interviews' },
             },
           ],
@@ -89,12 +89,12 @@ export default defineConfig({
           items: [
             {
               label: 'Notes',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'typescript/notes' },
             },
             {
               label: 'Coding Interviews',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'typescript/coding-interviews' },
             },
           ],
@@ -105,19 +105,19 @@ export default defineConfig({
           items: [
             {
               label: 'Notes',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'nodejs/notes' },
             },
             {
               label: 'Coding Interviews',
-              collapsed: false,
+              collapsed: true,
               autogenerate: { directory: 'nodejs/coding-interviews' },
             },
           ],
         },
         {
           label: 'Beyond JavaScript',
-          collapsed: false,
+          collapsed: true,
           autogenerate: { directory: 'beyond-javascript' },
         },
       ],
