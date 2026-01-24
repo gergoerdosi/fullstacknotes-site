@@ -20,3 +20,29 @@
   
   --sl-hue-accent: 217;
 }
+
+/* Format the "Blog" entry in the sidebar */
+.sidebar-content .top-level > li:first-child {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  position: relative;
+}
+
+.sidebar-content .top-level > li:first-child::after {
+  content: "NOTES";
+  
+  /* Layout */
+  position: absolute;
+  top: 100%;
+  right: 0;
+  padding-top: 0.6rem;
+  
+  /* Typography */
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sl-color-gray-4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em; /* Wide spacing inside brackets looks clean */
+}

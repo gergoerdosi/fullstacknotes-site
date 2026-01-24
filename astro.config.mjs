@@ -63,6 +63,14 @@ export default defineConfig({
       ],
       sidebar: [
         {
+          label: 'Blog',
+          collapsed: true,
+          autogenerate: {
+            directory: 'blog',
+            collapsed: true
+          },
+        },
+        {
           label: 'JavaScript',
           collapsed: false,
           items: [

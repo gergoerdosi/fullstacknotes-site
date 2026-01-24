@@ -1,0 +1,34 @@
+---
+interface Props {
+  date: string;
+  readTime?: string;
+}
+
+const { date, readTime } = Astro.props;
+---
+
+<div class="blog-header">
+  <time datetime={date}>{date}</time>
+  <span class="divider">|</span>
+  <span>{readTime} minutes read</span>
+</div>
+
+<style>
+  .blog-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    
+    margin-top: -0.5rem; 
+    margin-bottom: 2rem;
+    
+    font-family: var(--sl-font-mono);
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-4);
+  }
+  
+  .divider {
+    color: var(--sl-color-gray-5);
+  }
+</style>

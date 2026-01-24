@@ -1,0 +1,149 @@
+---
+title: "The Great Node.js Bridge: A Guide to require(esm)"
+description: Understanding require(esm) in Node.js 25
+sidebar:
+  label: "2026-01-24 - The Great Node.js Bridge"
+  order: -20260124
+---
+
+import BlogHeader from '../../../../components/BlogHeader.astro';
+
+<BlogHeader date="2026-01-24" readTime="5" />
+
+If you have been working in the Node.js ecosystem for the past five years, you have almost certainly encountered The Error.
+
+You are working in an established CommonJS application (using `require`). You decide to install a modern library—perhaps `node-fetch` v3, or `chalk` v5—to help with a task. You write the standard `const chalk = require('chalk');`, run your app, and crash straight into this wall:
+
+> **Error [ERR_REQUIRE_ESM]: require() of ES Module /path/to/node_modules/chalk/source/index.js not supported. Instead change the require of index.js to a dynamic import() which is available in all CommonJS modules.**
+
+This error became a symbol of the painful "interop war" between Node's legacy module system (CommonJS/CJS) and the JavaScript standard module system (ECMAScript Modules/ESM). It forced developers into awkward corners: either rewrite your entire application to ESM just to use one library, stick with outdated library versions, or litter your synchronous code with complex `async import()` calls.
+
+Well, I have incredible news. Starting with Node.js 23, and solidifying as standard behavior in Node.js 25, that error is largely a thing of the past.
+
+Node.js has officially torn down the wall. You can now synchronously `require()` ESM files.
+
+Here is everything you need to know about this ecosystem-shifting feature, the critical "gotcha" that still exists, and what it means for the future of your codebase.
+
+---
+
+## The New Reality
+
+For years, the technical stance of the Node.js team was that `require()` is fundamentally synchronous, and ESM is fundamentally asynchronous, and ne'er the twain shall meet.
+
+However, the practical friction in the ecosystem became too great to ignore. Through significant engineering effort, Node.js now supports loading ESM files synchronously under specific conditions.
+
+### How it looks in practice
+
+Let's say you have a modern ESM library file:
+
+```javascript
+// ✅ my-modern-library.mjs (ESM)
+export function sayHello(name) {
+  return `Hello, ${name}! from ESM world.`;
+}
+
+```
+
+In the "bad old days" (Node.js 20 and older), trying to `require` this file in a CommonJS application would crash instantly.
+
+**Today (Node.js 23 / 25+):**
+
+```javascript
+// ✅ legacy-app.cjs (CommonJS)
+// This used to throw ERR_REQUIRE_ESM. Now? It just works.
+
+const lib = require('./my-modern-library.mjs');
+
+console.log(lib.sayHello("Developer"));
+// Output: Hello, Developer! from ESM world.
+
+```
+
+This simple interaction is a massive quality-of-life improvement. It means legacy applications can now consume modern, "ESM-only" packages from npm without needing a total rewrite.
+
+---
+
+## The Critical Catch: Top-Level Await
+
+Before you pop the champagne, there is one massive constraint you must understand.
+
+`require()` is, and always will be, a synchronous operation. It stops your program execution until it has loaded the file.
+
+ESM has a feature called **Top-Level Await (TLA)**, which allows a module to pause its own evaluation asynchronously to fetch data or establish connections before finishing loading.
+
+If `require()` (synchronous) tries to load an ESM file that uses Top-Level Await (asynchronous), Node.js has no choice but to throw an error. It cannot "pause" a synchronous `require` call.
+
+### The failure scenario
+
+If your ESM library looks like this:
+
+```javascript
+// ⚠️ async-config.mjs
+// This module uses TLA, making it inherently asynchronous
+const response = await fetch('https://api.example.com/config');
+const config = await response.json();
+export default config;
+
+```
+
+Trying to `require` it will fail:
+
+```javascript
+// ❌ main.cjs
+try {
+  const config = require('./async-config.mjs');
+} catch (e) {
+  console.error(e.code); 
+  // Output: ERR_REQUIRE_ASYNC_MODULE
+  // "Cannot require() an ES Module that uses top-level await"
+}
+
+```
+
+**The Rule:** You can `require(esm)` *only* if the target ESM file (and its entire dependency tree) is completely synchronous.
+
+---
+
+## A Minor Nuance: The Namespace Object
+
+When you use `import thing from 'pkg'`, you get the default export.
+
+When you use `require('pkg')` to load a CJS package, you get whatever was assigned to `module.exports`.
+
+When you cross the bridge and use `require('esm-pkg')`, what you get back is an **ESM Namespace Object**. This means if the ESM file uses a `default export`, you won't get it directly; you have to access `.default`.
+
+```javascript
+// math.mjs
+export default function add(a,b) { return a+b; }
+
+// main.cjs
+const math = require('./math.mjs');
+// math(1,2) will fail. 'math' is an object { default: [Function: add] }
+
+console.log(math.default(1, 2)); // This works.
+
+```
+
+*Note: While some tooling tries to paper over this, raw Node.js behaves this way. Be prepared for the `.default` dance.*
+
+---
+
+## The Strategy: Should I cancel my ESM migration?
+
+Now that `require(esm)` works, you might be tempted to stick with CommonJS forever. Why bother migrating to `import` if `require` works everywhere now?
+
+**Please don't do that.**
+
+Think of this new feature as a high-quality **bridge**, not a permanent residence.
+
+ESM (`import`) is the official standard for JavaScript across browsers, servers, and edge runtimes. It offers better static analysis for tooling, better tree-shaking for smaller bundles, and native access to features like Top-Level Await.
+
+If you stay on CommonJS, you are cut off from using libraries that rely on Top-Level Await, and your code remains divergent from the rest of the JavaScript world.
+
+**Your new strategy should be:**
+
+1. **New Projects:** Always start with ESM (`"type": "module"` in `package.json`).
+2. **Existing CJS Projects:** Continue planning your migration to ESM.
+3. **The Benefit:** Use `require(esm)` to ease the transition. You no longer have to migrate your *entire* codebase just because you want to update one dependency that went ESM-only. You can update that dependency today, let `require()` handle the interop, and migrate your own code to ESM on your own schedule.
+
+The interop war has cooled down into a peaceful treaty. It's a great time to be a Node.js developer.
