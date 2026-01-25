@@ -12,6 +12,10 @@ sidebar:
   order: -20260125
 ---
 
+import BlogHeader from '../../../../../components/BlogHeader.astro';
+
+<BlogHeader date="2026-01-26" readTime="3" />
+
 Data deletion is a scary concept in database management. Whether it's for auditing purposes, recovering accidental deletions, or simply maintaining a historical record, "hard deletes" (where data is permanently removed) can often be a liability.
 
 A common solution is "soft deleting" (adding a `is_deleted` flag), but that bloats your production tables and complicates every `SELECT` query you write.
