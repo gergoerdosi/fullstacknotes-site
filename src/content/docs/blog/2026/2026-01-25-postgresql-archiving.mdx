@@ -1,0 +1,145 @@
+---
+title: Archiving Deleted PostgreSQL Rows to JSONB
+description: Learn how to use PostgreSQL triggers to automatically move deleted rows into an audit table using JSONB for schema flexibility.
+tags:
+  - postgresql
+  - database
+  - sql
+  - jsonb
+  - tutorial
+sidebar:
+  label: "2026-01-25 - Archiving Deleted PostgreSQL Rows to JSONB"
+  order: -20260125
+---
+
+Data deletion is a scary concept in database management. Whether it's for auditing purposes, recovering accidental deletions, or simply maintaining a historical record, "hard deletes" (where data is permanently removed) can often be a liability.
+
+A common solution is "soft deleting" (adding a `is_deleted` flag), but that bloats your production tables and complicates every `SELECT` query you write.
+
+In this post, we will build a cleaner solution: **Automatic Archiving**. We will use a PostgreSQL Trigger to catch deleted rows and move them into a separate archive table.
+
+**The Secret Sauce:** We will store the deleted row as a **JSONB** object.
+
+### Why JSONB?
+
+Triggers usually require the archive table to match the source table column-for-column. If you add a column to your main table but forget to update the archive table, your trigger breaks.
+
+By converting the entire row `to_jsonb`, your archive table becomes **schema-agnostic**. You can add or remove columns in your main table, and your archive trigger will keep working without a single modification.
+
+---
+
+## Step 1: The Scenario
+
+Let's assume we have a critical table called `orders`.
+
+```sql
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_name TEXT NOT NULL,
+    amount DECIMAL(10, 2),
+    status TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Let's add some dummy data
+INSERT INTO orders (customer_name, amount, status) VALUES 
+('Alice Corp', 500.00, 'shipped'),
+('Bob Ltd', 120.50, 'pending'),
+('Charlie Inc', 999.99, 'cancelled');
+
+```
+
+## Step 2: Create the Archive Table
+
+We need a place to send the dead rows. This table will be very simple. It only needs a primary key, a timestamp for *when* the deletion happened, and the JSONB column to hold the data.
+
+```sql
+CREATE TABLE orders_archive (
+    archive_id SERIAL PRIMARY KEY,
+    original_row JSONB,
+    deleted_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+```
+
+> **Note:** We do not copy the columns `customer_name` or `amount` here. They will live inside the `original_row` JSON blob.
+
+## Step 3: The Archive Function
+
+Next, we write the PL/pgSQL function. This function will run every time a delete event occurs. It takes the `OLD` row (the data being deleted), converts it to JSON, and inserts it into the archive.
+
+```sql
+CREATE OR REPLACE FUNCTION archive_deleted_order()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert the deleted row as a JSONB object
+    INSERT INTO orders_archive (original_row, deleted_at)
+    VALUES (to_jsonb(OLD), NOW());
+    
+    -- Return the OLD row so the delete proceeds normally
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+```
+
+## Step 4: The Trigger
+
+Finally, we attach the function to the table using a Trigger. We want this to happen `AFTER DELETE` to ensure we are archiving data that was actually removed.
+
+```sql
+CREATE TRIGGER trigger_archive_order
+AFTER DELETE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION archive_deleted_order();
+
+```
+
+---
+
+## Testing the Solution
+
+Now for the moment of truth. Let's delete "Charlie Inc" from our orders table.
+
+```sql
+DELETE FROM orders WHERE customer_name = 'Charlie Inc';
+
+```
+
+If we check the `orders` table, Charlie is gone. But if we check the archive:
+
+```sql
+SELECT * FROM orders_archive;
+
+```
+
+**Result:**
+| archive_id | original_row | deleted_at |
+| :--- | :--- | :--- |
+| 1 | `{"id": 3, "status": "cancelled", "amount": 999.99, "created_at": "2023-10-27...", "customer_name": "Charlie Inc"}` | 2023-10-27 10:00:00+00 |
+
+Success! The data is preserved safely in the JSON structure.
+
+---
+
+## How to Query the Archived Data
+
+Since the data is in JSONB, you can still query specific fields easily using PostgreSQL's JSON operators (like `->>`).
+
+**Example: Find all deleted orders worth more than $500**
+
+```sql
+SELECT 
+    original_row ->> 'customer_name' as customer,
+    original_row ->> 'amount' as amount,
+    deleted_at
+FROM orders_archive
+WHERE (original_row ->> 'amount')::DECIMAL > 500;
+
+```
+
+## Summary of Benefits
+
+1. **Zero Maintenance:** You can change the `orders` table schema (add columns, rename columns) and the trigger will automatically capture the new structure in the JSON blob without you needing to update the `orders_archive` table definition.
+2. **Clean Production Data:** Your live tables only contain active data, making indexes smaller and queries faster.
+3. **Audit Trail:** You know exactly *when* the row was deleted.
