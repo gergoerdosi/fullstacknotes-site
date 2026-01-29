@@ -1,0 +1,181 @@
+---
+title: "Binary Power: A Deep Dive into JavaScript Typed Arrays"
+description: "Unlock the potential of raw binary data in JavaScript. Learn how ArrayBuffers, Views, and Typed Arrays work to power WebGL, file processing, and high-performance apps."
+tags: ["JavaScript", "Web Performance", "Binary Data", "Typed Arrays", "Deep Dive"]
+sidebar:
+  label: "2026-01-29 - JavaScript Typed Arrays"
+  order: -20260129
+---
+
+import BlogHeader from '@/components/BlogHeader.astro';
+
+<BlogHeader date="2026-01-29" readTime="4" />
+
+For a long time, JavaScript was the language of text. It handled strings, DOM elements, and JSON with ease. But as the web evolved into a platform for gaming, audio processing, video manipulation, and machine learning, text wasn't enough. We needed a way to handle raw binary data efficiently.
+
+Enter **Typed Arrays**.
+
+If you have ever wondered how WebGL renders 3D graphics, how the File API reads uploads, or how WebAssembly communicates with JS, you have stumbled upon the domain of Typed Arrays. In this post, we are going to tear apart the architecture of binary data in JavaScript, understanding not just *how* to use it, but *why* it exists.
+
+---
+
+## The Problem with Standard Arrays
+
+Before Typed Arrays, we only had the standard JavaScript Array (`[]`). While flexible, standard arrays are not optimized for raw binary data for a few reasons:
+
+1. **Dynamic Typing:** A standard array can hold a number at index 0, a string at index 1, and an object at index 2. The engine has to constantly check types.
+2. **Memory Layout:** Standard arrays are often implemented as hash maps or sparse arrays under the hood, meaning the data isn't necessarily stored in contiguous memory blocks.
+3. **Inefficiency:** If you are trying to process an image with millions of pixels, the overhead of standard arrays becomes a massive performance bottleneck.
+
+Typed Arrays solve this by providing a mechanism to access **raw memory** using specific numeric data types.
+
+---
+
+## The Architecture: Buffers and Views
+
+The most important thing to understand about Typed Arrays is that they are split into two distinct components: **The Buffer** and **The View**.
+
+1. **The ArrayBuffer (The Data):** This is a generic, fixed-length raw binary data buffer. You cannot access the contents of an `ArrayBuffer` directly. It is just a slab of memory.
+2. **The View (The Lens):** To read or write to that memory, you need a "view." The view interprets the raw bytes as specific number types (like 8-bit integers or 32-bit floats).
+
+Think of the `ArrayBuffer` as a hard drive, and the **View** as the file system driver that tells the computer how to read the ones and zeros.
+
+### 1. The ArrayBuffer
+
+Let's create a raw memory buffer of 16 bytes.
+
+```javascript
+// Create a buffer of 16 bytes
+const buffer = new ArrayBuffer(16);
+
+console.log(buffer.byteLength); // 16
+
+```
+
+At this point, `buffer` is just 16 bytes of zeroed-out memory. We cannot modify it yet because we don't have a view.
+
+### 2. The Typed Array Views
+
+To work with this memory, we create a Typed Array. These look and act mostly like normal arrays, but they are "typed" to a specific binary format.
+
+Common views include:
+
+* **Uint8Array:** Unsigned 8-bit integer (0 to 255). Great for byte-level data.
+* **Int16Array:** Signed 16-bit integer (-32768 to 32767).
+* **Float32Array:** 32-bit floating point numbers. The standard for WebGL and graphics.
+
+Let's create two different views into the **same** buffer.
+
+```javascript
+const buffer = new ArrayBuffer(16);
+
+// View 1: Treat the data as 32-bit integers (4 bytes each)
+const int32View = new Int32Array(buffer);
+
+// View 2: Treat the data as 8-bit integers (1 byte each)
+const uint8View = new Uint8Array(buffer);
+
+// We can fit four 32-bit integers in 16 bytes
+console.log(int32View.length); // 4
+
+// We can fit sixteen 8-bit integers in 16 bytes
+console.log(uint8View.length); // 16
+
+// WRITE DATA via the 32-bit view
+int32View[0] = 42; 
+
+// READ DATA via the 8-bit view
+console.log(uint8View); 
+// Output might look like: [42, 0, 0, 0, 0, 0, ...] (Depending on Endianness)
+
+```
+
+**Key Takeaway:** Because both views share the same underlying `ArrayBuffer`, modifying one view immediately affects the other. This allows you to reinterpret binary data on the fly without copying it.
+
+---
+
+## Specialized Views
+
+There are several types of views available depending on the data you need to handle. Here is a quick reference table:
+
+| Type | Size (Bytes) | Description | Common Use Case |
+| --- | --- | --- | --- |
+| **Int8Array** | 1 | Signed 8-bit integer | General binary data |
+| **Uint8Array** | 1 | Unsigned 8-bit integer | Byte streams, networking |
+| **Uint8ClampedArray** | 1 | Unsigned 8-bit (Clamped) | **Canvas Image Data** (0-255) |
+| **Int16Array** | 2 | Signed 16-bit integer | Audio samples (PCM) |
+| **Float32Array** | 4 | 32-bit IEEE floating point | WebGL coordinates, vectors |
+| **BigInt64Array** | 8 | Signed 64-bit integer | High precision timestamps/IDs |
+
+> **Note on `Uint8ClampedArray`:** This is special. If you try to put the number 300 into a `Uint8Array`, it will wrap around (overflow) to 44. In a `Uint8ClampedArray`, it "clamps" at the max value, so 300 becomes 255. This is crucial for image processing where pixel values shouldn't wrap around to black if they get too bright.
+
+---
+
+## The Flexible View: DataView
+
+Typed Arrays (like `Uint8Array`) follow the system's "endianness" (usually Little Endian on Intel/Apple silicon). However, network protocols and binary files often use Big Endian.
+
+If you read a binary file format (like a JPEG or MP3 headers) using standard Typed Arrays, your numbers might come out jumbled because the byte order is reversed.
+
+**DataView** provides a low-level interface for reading and writing data in an `ArrayBuffer` regardless of the platform's architecture. It allows you to specify the Endianness manually.
+
+```javascript
+const buffer = new ArrayBuffer(4);
+const view = new DataView(buffer);
+
+// Write value 123456 as a 32-bit integer, Big Endian (Network Byte Order)
+view.setInt32(0, 123456, false); // false = Big Endian
+
+// Read it back as Little Endian (standard PC)
+console.log(view.getInt32(0, true)); // Will result in a completely different number!
+
+```
+
+---
+
+## Real-World Use Cases
+
+Why do we actually use these in day-to-day coding?
+
+### 1. Canvas and Image Processing
+
+When you get pixel data from an HTML5 Canvas using `context.getImageData()`, it returns a `Uint8ClampedArray`. The array is a flat list of RGBA values ().
+
+You can manipulate images incredibly fast by iterating over this Typed Array rather than standard arrays.
+
+### 2. Fetching Binary Data
+
+If you are downloading a binary file (like an audio file or a PDF) via `fetch`, you use `arrayBuffer()`:
+
+```javascript
+fetch('path/to/music.mp3')
+  .then(response => response.arrayBuffer())
+  .then(buffer => {
+      // Decode audio data here
+      const view = new Uint8Array(buffer);
+      console.log("First byte:", view[0]);
+  });
+
+```
+
+### 3. WebGL and 3D Graphics
+
+WebGL expects data in a very specific memory layout to send to the GPU. You cannot send a standard JS array to a graphics card. You must flatten your 3D vertices into a `Float32Array`.
+
+---
+
+## Differences from Normal Arrays
+
+While Typed Arrays have methods like `.map()`, `.filter()`, and `.slice()`, they lack some key features of standard Arrays:
+
+1. **Fixed Size:** You cannot `.push()` or `.pop()`. Once created, the size is set in stone.
+2. **No Holes:** You cannot have "empty" slots. Every slot is initialized to 0.
+3. **Single Type:** You cannot mix strings and numbers.
+
+---
+
+## Conclusion
+
+Typed Arrays bridge the gap between the high-level flexibility of JavaScript and the low-level performance requirements of modern computing. They provide a view into raw memory, allowing JavaScript to talk to graphics cards, audio hardware, and network sockets in their native binary tongue.
+
+While you might not use them for a simple Todo list app, understanding `ArrayBuffer` and `DataView` is essential for any developer looking to break into graphics, media processing, or high-performance WebAssembly applications.
